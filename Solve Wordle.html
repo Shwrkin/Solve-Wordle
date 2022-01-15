@@ -38,7 +38,7 @@
         // Initializing variables for later use
         var letters = { 0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j', 10: 'k', 11: 'l', 12: 'm', 13: 'n', 14: 'o', 15: 'p', 16: 'a', 17: 'r', 18: 's', 19: 't', 20: 'u', 21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z' }
         var knownLetters = []
-        var word = [0, 25, 0, 0, 25]
+        var word = [0, 25, 0, 0, 24]
         var isWord = false
 
         // Takes the var "word" and returns the next word in the abc 
@@ -48,7 +48,7 @@
             // Makes the last letter in "word" the next letter in the abc
             ++word[4]
             // Checks if any letter is the last letter in the abc, and if it is makes it 'a' and makes the prior letter the next letter in the abc
-            for (let i = 5; i >= 0; --i) {
+            for (let i = 4; i >= 0; --i) {
                 if (word[i] >= Object.keys(letters).length) {
                     word[i] = 0
                     ++word[location - 1]
@@ -57,7 +57,7 @@
                 }
             }
             // Makes the array "word" into a string
-            for (let i = 0; i < 6; ++i) {
+            for (let i = 0; i < 5; ++i) {
                 strWord += letters[word[i]]
             }
             return strWord
