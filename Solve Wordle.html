@@ -15,7 +15,7 @@
 <body>
     <main>
         <div id="1"></div>
-        <div id="2">sdkfnsd</div>
+        <div id="2"></div>
         <div id="3"></div>
         <div id="4"></div>
         <div id="5"></div>
@@ -31,44 +31,29 @@
         crossorigin="anonymous"></script>
     <!-- Setting up jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <!-- Setting up wordlist -->
+    <script src="wordlist.js"></script>
+
 
     <script>
         "use strict"
 
         // Initializing variables for later use
         var letters = { 0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j', 10: 'k', 11: 'l', 12: 'm', 13: 'n', 14: 'o', 15: 'p', 16: 'a', 17: 'r', 18: 's', 19: 't', 20: 'u', 21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z' }
-        var knownLetters = []
-        var word = [0, 25, 0, 0, 24]
-        var isWord = false
+        var wordIndex = 0
 
-        // Takes the var "word" and returns the next word in the abc 
+        // Returns the next word in the word list 
         function nextWord() {
-            let strWord = ""
-            let location = 4
-            // Makes the last letter in "word" the next letter in the abc
-            ++word[4]
-            // Checks if any letter is the last letter in the abc, and if it is makes it 'a' and makes the prior letter the next letter in the abc
-            for (let i = 4; i >= 0; --i) {
-                if (word[i] >= Object.keys(letters).length) {
-                    word[i] = 0
-                    ++word[location - 1]
-                } else {
-                    break
-                }
-            }
-            // Makes the array "word" into a string
-            for (let i = 0; i < 5; ++i) {
-                strWord += letters[word[i]]
-            }
-            return strWord
+            ++wordIndex
+            return wordList[wordIndex]
         }
 
         $(document).ready(function () {
-            $("#1").text(letters[0])
-            $("#2").text(Object.keys(letters).length)
-            $("#3").text(nextWord())
-            $("#4").text(nextWord())
-            $("#5").text(nextWord())
+            $("#1").text()
+            $("#2").text()
+            $("#3").text()
+            $("#4").text()
+            $("#5").text()
         })
     </script>
 </body>
