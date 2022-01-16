@@ -14,6 +14,7 @@
 
 <body>
     <main>
+        <div id="word"></div>
         <div id="1"></div>
         <div id="2"></div>
         <div id="3"></div>
@@ -39,8 +40,7 @@
         "use strict"
 
         // Initializing variables for later use
-        var letters = { 0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j', 10: 'k', 11: 'l', 12: 'm', 13: 'n', 14: 'o', 15: 'p', 16: 'a', 17: 'r', 18: 's', 19: 't', 20: 'u', 21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z' }
-        var wordIndex = 0
+        let wordIndex = 0
 
         // Returns the next word in the word list 
         function nextWord() {
@@ -48,8 +48,14 @@
             return wordList[wordIndex]
         }
 
+        function randomWord() {
+            let index = Math.floor(Math.random() * 2315)
+            return String(wordList[index])
+        }
+
         console.log(wordList.length)
         $(document).ready(function () {
+            $("#word").text(randomWord())
             $("#1").text(wordList)
             $("#2").text()
             $("#3").text()
