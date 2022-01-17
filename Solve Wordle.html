@@ -52,11 +52,13 @@
             return wordList[wordIndex]
         }
 
+        // Generates a random word from the list
         function randomWord() {
             let index = Math.floor(Math.random() * wordCount)
             return String(wordList[index])
         }
 
+        // Checks to see what letter of the word provided are in the correct place and to see if they are in the hidden word
         function checkWord(word, hiddenWord) {
             let retVal = []
 
@@ -72,6 +74,7 @@
             return retVal
         }
 
+        // Checks the function checkWord()
         function testCheckWord(word, hiddenWord, expectedResult) {
             const checkWordResult = JSON.stringify(checkWord(word, hiddenWord))
             const expectedResultResult = JSON.stringify(expectedResult)
@@ -81,7 +84,11 @@
             }
         }
 
-        testCheckWord('aaa', 'aab', [letterInPlace, letterInPlace, letterInPlace])
+        // Some tests for the function CheckWord
+        testCheckWord('aaa', 'aaa', [letterInPlace, letterInPlace, letterInPlace])
+        testCheckWord('abc', 'aaa', [letterInPlace, letterNotInWord, letterNotInWord])
+        testCheckWord('aaa', 'abc', [letterInPlace, letterNotInWord, letterNotInWord])
+        
 
 
         console.log(wordCount)
