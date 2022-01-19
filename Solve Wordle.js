@@ -1,3 +1,8 @@
+/* TODO: 
+    1. Check if input is the right length
+    2. Color the correct letters
+    3. Check if word is in the list
+*/
 "use strict"
 
 // Initializing variables for later use
@@ -9,6 +14,7 @@ const letterNotInWord = 'letterNotInWord'
 const unknown = 'unknown'
 const taken = 'taken'
 const free = 'free'
+const wordle = randomWord()
 
 // Returns the next word in the word list 
 function nextWord() {
@@ -52,6 +58,13 @@ function checkWord(word, hiddenWord) {
     return retVal
 }
 
+function keyPress(event) {
+    const character = String.fromCharCode(event.which)
+    if ( character === '\r' || character === '\n') {
+        console.log(checkWord(event.target.value, wordle))
+    }
+}
+
 // Checks the function checkWord()
 function testCheckWord(word, hiddenWord, expectedResult) {
     const checkWordResult = JSON.stringify(checkWord(word, hiddenWord))
@@ -73,10 +86,12 @@ testCheckWord('babab', 'aabba', [letterInWord, letterInPlace, letterInPlace, let
 
 
 $(document).ready(function () {
-    $("#word").text(randomWord())
+    $("#word").text(wordle)
     $("#1").text()
     $("#2").text()
     $("#3").text()
     $("#4").text()
     $("#5").text()
+
+    $('#firstTry').keypress(keyPress)
 })
