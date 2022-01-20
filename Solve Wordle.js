@@ -1,4 +1,5 @@
 /* TODO: 
+    1. Focus the input created in the function keyPress()
     3. Check if word is in the list
 */
 "use strict"
@@ -13,6 +14,8 @@ const unknown = 'unknown'
 const taken = 'taken'
 const free = 'free'
 const wordle = randomWord()
+const numberOfGuesses = 6
+const letters = /^[a-z]+$/
 
 // Returns the next word in the word list 
 function nextWord() {
@@ -68,7 +71,12 @@ function keyPress(event) {
     }
     // Ensure the word is 5 letters long
     if (word.length !== 5) {
-        alert('word must be 5 characters long')
+        alert('Word must be 5 characters long')
+        return
+    }
+    // Ensure the word is made only from letters
+    if (word.match(letters) === null) {
+        alert('Word must contain only lowercase alphabet letters')
         return
     }
     // Changes the input to a div with the colored word
@@ -77,8 +85,10 @@ function keyPress(event) {
     }
     // Changes the input to a div
     event.target.outerHTML = retHtml
-    if ($('main').childElementCount !== 6) {
-        $('main').append('<input type="text" maxlength="5"></input>')
+    // Adds another input after the answer was submitted, and makes sure that only 5 submits are possible
+    if ($('#guesses').children().length !== numberOfGuesses) {
+        $('#guesses').append('<input type="text" maxlength="5"></input>')
+        $('#guesses:last-child').focus()
     }
 }
 
