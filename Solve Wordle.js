@@ -1,6 +1,4 @@
 /* TODO: 
-    1. Check if input is the right length
-    2. Color the correct letters
     3. Check if word is in the list
 */
 "use strict"
@@ -57,12 +55,47 @@ function checkWord(word, hiddenWord) {
     }
     return retVal
 }
-
+// Called when the user presses a key
 function keyPress(event) {
     const character = String.fromCharCode(event.which)
-    if ( character === '\r' || character === '\n') {
-        console.log(checkWord(event.target.value, wordle))
+    const word = event.target.value
+    const placements = checkWord(word, wordle)
+    const coloredWord = colorWord(word, placements)
+    let retHtml = `<div></div>`
+    // Ensure the user pressed enter
+    if (character !== '\r' && character !== '\n') {
+        return
     }
+    // Ensure the word is 5 letters long
+    if (word.length !== 5) {
+        alert('word must be 5 characters long')
+        return
+    }
+    // Changes the input to a div with the colored word
+    for (let i = word.length - 1; i >= 0; --i) {
+        retHtml = retHtml.slice(0, 5) + `${coloredWord[i]}` + retHtml.slice(5)
+    }
+    event.target.outerHTML = retHtml
+}
+
+function colorWord(word, placements) {
+    let retVal = []
+    for (let i = 0; i < word.length; ++i) {
+        let colorClass = ''
+        switch (placements[i]) {
+            case letterInPlace:
+                colorClass = 'text-success'
+                break;
+            case letterInWord:
+                colorClass = 'text-warning'
+                break;
+            case letterNotInWord:
+                colorClass = 'text-secondary'
+                break;
+        }
+        retVal.push(`<span class="${colorClass} fs-1">${word[i]}</span>`)
+    }
+    return retVal
 }
 
 // Checks the function checkWord()
@@ -75,6 +108,13 @@ function testCheckWord(word, hiddenWord, expectedResult) {
     }
 }
 
+function testColorWord(word, placements, expected) {
+    const actual = colorWord(word, placements)
+    if (expected.join() !== actual.join()) {
+        console.log(`Expected output: ${expected}\nOutput received: ${actual}`)
+    }
+}
+
 // Some tests for the function CheckWord
 testCheckWord('aaa', 'aaa', [letterInPlace, letterInPlace, letterInPlace])
 testCheckWord('abc', 'aaa', [letterInPlace, letterNotInWord, letterNotInWord])
@@ -83,6 +123,14 @@ testCheckWord('adbac', 'aabbc', [letterInPlace, letterNotInWord, letterInPlace, 
 testCheckWord('aadbb', 'abcba', [letterInPlace, letterInWord, letterNotInWord, letterInPlace, letterInWord])
 testCheckWord('babab', 'aabba', [letterInWord, letterInPlace, letterInPlace, letterInWord, letterNotInWord])
 
+// Some more tests for function colorWord
+testColorWord('aaaaa', [letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord], [
+    '<span class="text-secondary">a</span>',
+    '<span class="text-secondary">a</span>',
+    '<span class="text-secondary">a</span>',
+    '<span class="text-secondary">a</span>',
+    '<span class="text-secondary">a</span>'
+])
 
 
 $(document).ready(function () {
@@ -93,5 +141,5 @@ $(document).ready(function () {
     $("#4").text()
     $("#5").text()
 
-    $('#firstTry').keypress(keyPress)
+    $('input').keypress(keyPress)
 })
