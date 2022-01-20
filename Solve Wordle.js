@@ -75,9 +75,14 @@ function keyPress(event) {
     for (let i = word.length - 1; i >= 0; --i) {
         retHtml = retHtml.slice(0, 5) + `${coloredWord[i]}` + retHtml.slice(5)
     }
+    // Changes the input to a div
     event.target.outerHTML = retHtml
+    if ($('main').childElementCount !== 6) {
+        $('main').append('<input type="text" maxlength="5"></input>')
+    }
 }
 
+// Says which characters are at the right place
 function colorWord(word, placements) {
     let retVal = []
     for (let i = 0; i < word.length; ++i) {
@@ -125,21 +130,15 @@ testCheckWord('babab', 'aabba', [letterInWord, letterInPlace, letterInPlace, let
 
 // Some more tests for function colorWord
 testColorWord('aaaaa', [letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord], [
-    '<span class="text-secondary">a</span>',
-    '<span class="text-secondary">a</span>',
-    '<span class="text-secondary">a</span>',
-    '<span class="text-secondary">a</span>',
-    '<span class="text-secondary">a</span>'
+    '<span class="text-secondary fs-1">a</span>',
+    '<span class="text-secondary fs-1">a</span>',
+    '<span class="text-secondary fs-1">a</span>',
+    '<span class="text-secondary fs-1">a</span>',
+    '<span class="text-secondary fs-1">a</span>'
 ])
 
 
 $(document).ready(function () {
     $("#word").text(wordle)
-    $("#1").text()
-    $("#2").text()
-    $("#3").text()
-    $("#4").text()
-    $("#5").text()
-
-    $('input').keypress(keyPress)
+    $(document).on('keydown', 'input', keyPress)
 })
