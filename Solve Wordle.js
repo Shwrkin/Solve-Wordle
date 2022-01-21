@@ -1,4 +1,5 @@
 /* TODO: 
+    1. Make the program solve the wordle
 */
 "use strict"
 
@@ -14,6 +15,9 @@ const free = 'free'
 const wordle = randomWord()
 const numberOfGuesses = 6
 const letters = /^[a-z]+$/
+let unUsableLetters = []
+let locations = { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '' }
+let usableLetters = []
 
 // Returns the next word in the word list 
 function nextWord() {
@@ -27,18 +31,20 @@ function randomWord() {
     return String(wordList[index])
 }
 
-// Checks to see what letter of the word provided are in the correct place and to see if they are in the hidden word
-function checkWord(word, hiddenWord) {
+// Checks to see what letter of the word provided are in the correct place and to see if they are in the wordle
+function checkWord(word) {
     let retVal = []
     let unusedLetters = []
 
     // Checks to see if the letter is matching the letter and the place
-    for (let i = 0; i < hiddenWord.length; ++i) {
-        if (word[i] === hiddenWord[i]) {
+    for (let i = 0; i < wordle.length; ++i) {
+        if (word[i] === wordle[i]) {
             retVal.push(letterInPlace)
+            locations[i] = word[i]
+            usableLetters.push(word[i])
         } else {
             retVal.push(unknown)
-            unusedLetters.push(hiddenWord[i])
+            unusedLetters.push(wordle[i])
         }
     }
     // Checks to see if the letters not matching the place are found in the word
@@ -52,6 +58,8 @@ function checkWord(word, hiddenWord) {
         // Says the letter is not in the word
         else {
             retVal[i] = letterNotInWord
+            if (wordle.includes(word[i]) === false)
+                unUsableLetters.push(word[i])
         }
     }
     return retVal
@@ -67,19 +75,22 @@ function keyPress(event) {
     if (character !== '\r' && character !== '\n') {
         return
     }
-    // Ensure the word is 5 letters long
-    if (word.length !== 5) {
+    // Ensure the word is the same length as the wordle
+    if (word.length !== wordle.length) {
         alert('Word must be 5 characters long')
+        event.target.value = ''
         return
     }
     // Ensure the word is made only from letters
     if (word.match(letters) === null) {
         alert('Word must contain only lowercase alphabet letters')
+        event.target.value = ''
         return
     }
     // Ensure the word is in the possibleWords list
     if (possibleWords.includes(word) === false) {
         alert(`${word} is not a word`)
+        event.target.value = ''
         return
     }
     // Changes the input to a div with the colored word
@@ -90,7 +101,7 @@ function keyPress(event) {
     event.target.outerHTML = retHtml
     // Adds another input after the answer was submitted, and makes sure that only 5 submits are possible
     if ($('#guesses').children().length !== numberOfGuesses) {
-        $('#guesses').append('<input type="text" maxlength="5" style="width: 3em;"></input>')
+        $('#guesses').append(`<input type="text" maxlength="${wordle.length}" style="width: 3em;"></input>`)
         $('input').focus()
     }
 }
@@ -117,14 +128,14 @@ function colorWord(word, placements) {
 }
 
 // Checks the function checkWord()
-function testCheckWord(word, hiddenWord, expectedResult) {
-    const checkWordResult = JSON.stringify(checkWord(word, hiddenWord))
-    const expectedResultResult = JSON.stringify(expectedResult)
+// function testCheckWord(word, expectedResult) {
+//     const checkWordResult = JSON.stringify(checkWord(word))
+//     const expectedResultResult = JSON.stringify(expectedResult)
 
-    if (checkWordResult !== expectedResultResult) {
-        console.log(`Expected output: ${expectedResultResult}\nOutput received: ${checkWordResult}\nInputs were word: ${word}, hiddenWord: ${hiddenWord}`)
-    }
-}
+//     if (checkWordResult !== expectedResultResult) {
+//         console.log(`Expected output: ${expectedResultResult}\nOutput received: ${checkWordResult}\nInputs were word: ${word}, wordle: ${wordle}`)
+//     }
+// }
 
 function testColorWord(word, placements, expected) {
     const actual = colorWord(word, placements)
@@ -132,14 +143,6 @@ function testColorWord(word, placements, expected) {
         console.log(`Expected output: ${expected}\nOutput received: ${actual}`)
     }
 }
-
-// Some tests for the function CheckWord
-testCheckWord('aaa', 'aaa', [letterInPlace, letterInPlace, letterInPlace])
-testCheckWord('abc', 'aaa', [letterInPlace, letterNotInWord, letterNotInWord])
-testCheckWord('aaa', 'abc', [letterInPlace, letterNotInWord, letterNotInWord])
-testCheckWord('adbac', 'aabbc', [letterInPlace, letterNotInWord, letterInPlace, letterInWord, letterInPlace])
-testCheckWord('aadbb', 'abcba', [letterInPlace, letterInWord, letterNotInWord, letterInPlace, letterInWord])
-testCheckWord('babab', 'aabba', [letterInWord, letterInPlace, letterInPlace, letterInWord, letterNotInWord])
 
 // Some more tests for function colorWord
 testColorWord('aaaaa', [letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord], [
@@ -149,9 +152,39 @@ testColorWord('aaaaa', [letterNotInWord, letterNotInWord, letterNotInWord, lette
     '<span class="text-secondary fs-1">a</span>',
     '<span class="text-secondary fs-1">a</span>'
 ])
+// Ensures the word is usable
+function isUsableWord(word) {
+    let usable = true
+
+    // Ensures the letter is not in the unUsableLetters list
+    for (let i = 0; i < unUsableLetters.length; ++i) {
+        if (word.includes(unUsableLetters[i])) {
+            usable = false
+            break
+        }
+    }
+    // Ensures the correct placements of the letters
+    for (let i = 0; i < word.length; ++i) {
+        if (word[i] !== locations[i] && locations[i] !== '') {
+            usable = false
+            break
+        }
+    }
+    return usable
+}
+
+// Enters into input the next word in the list that matches the known letters
+function guessWord(event) {
+    let word = ''
+    do {
+        word = nextWord()
+    } while (!isUsableWord(word))
+    event.target.value = word
+}
 
 
 $(document).ready(function () {
     $("#word").text(wordle)
     $(document).on('keydown', 'input', keyPress)
+    $(document).on('click', 'input', guessWord)
 })
