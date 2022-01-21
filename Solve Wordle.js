@@ -1,5 +1,5 @@
 /* TODO: 
-    1. Make the program solve the wordle
+    1. Make the program not use letters that are in the word but not in the correct place
 */
 "use strict"
 
@@ -16,8 +16,12 @@ const wordle = randomWord()
 const numberOfGuesses = 6
 const letters = /^[a-z]+$/
 let unUsableLetters = []
-let locations = { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '' }
-let usableLetters = []
+let locations = {}
+let lettersInWord = []
+for (let i = 0; i < wordle.length; ++i) {
+    lettersInWord.push('')
+    locations[i] = ''
+}
 
 // Returns the next word in the word list 
 function nextWord() {
@@ -41,7 +45,6 @@ function checkWord(word) {
         if (word[i] === wordle[i]) {
             retVal.push(letterInPlace)
             locations[i] = word[i]
-            usableLetters.push(word[i])
         } else {
             retVal.push(unknown)
             unusedLetters.push(wordle[i])
@@ -54,6 +57,7 @@ function checkWord(word) {
             retVal[i] = letterInWord
             const index = unusedLetters.indexOf(word[i])
             unusedLetters.splice(index, 1)
+            lettersInWord[i] = word[i]
         }
         // Says the letter is not in the word
         else {
@@ -152,6 +156,7 @@ testColorWord('aaaaa', [letterNotInWord, letterNotInWord, letterNotInWord, lette
     '<span class="text-secondary fs-1">a</span>',
     '<span class="text-secondary fs-1">a</span>'
 ])
+
 // Ensures the word is usable
 function isUsableWord(word) {
     let usable = true
@@ -170,6 +175,21 @@ function isUsableWord(word) {
             break
         }
     }
+    // Ensures word has all the letters that are in the word but not the right place
+    for (let i = 0; i < word.length; ++i) {
+        if (locations[i] !== '') { continue }
+        if (word.includes(lettersInWord[i]) === false && lettersInWord[i] !== '') {
+            usable = false
+            break
+        }
+    }
+    // Ensures the letters that are in the word but not in the right place are used in a different place
+    for (let i = 0; i < word.length; ++i) {
+        if (word[i] === lettersInWord[i]) {
+            usable = false
+            break
+        }
+    }
     return usable
 }
 
@@ -180,6 +200,7 @@ function guessWord(event) {
         word = nextWord()
     } while (!isUsableWord(word))
     event.target.value = word
+    console.log(lettersInWord)
 }
 
 
