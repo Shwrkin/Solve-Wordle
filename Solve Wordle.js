@@ -1,6 +1,4 @@
 /* TODO: 
-    1. Focus the input created in the function keyPress()
-    3. Check if word is in the list
 */
 "use strict"
 
@@ -79,6 +77,11 @@ function keyPress(event) {
         alert('Word must contain only lowercase alphabet letters')
         return
     }
+    // Ensure the word is in the possibleWords list
+    if (possibleWords.includes(word) === false) {
+        alert(`${word} is not a word`)
+        return
+    }
     // Changes the input to a div with the colored word
     for (let i = word.length - 1; i >= 0; --i) {
         retHtml = retHtml.slice(0, 5) + `${coloredWord[i]}` + retHtml.slice(5)
@@ -87,8 +90,8 @@ function keyPress(event) {
     event.target.outerHTML = retHtml
     // Adds another input after the answer was submitted, and makes sure that only 5 submits are possible
     if ($('#guesses').children().length !== numberOfGuesses) {
-        $('#guesses').append('<input type="text" maxlength="5"></input>')
-        $('#guesses:last-child').focus()
+        $('#guesses').append('<input type="text" maxlength="5" style="width: 3em;"></input>')
+        $('input').focus()
     }
 }
 
