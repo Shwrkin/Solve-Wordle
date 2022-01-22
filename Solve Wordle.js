@@ -1,5 +1,6 @@
 /* TODO: 
-    1. Make the program not use letters that are in the word but not in the correct place
+    1. Improve the function guessWord()
+    2. Make this program work with the site wordle
 */
 "use strict"
 
@@ -16,11 +17,11 @@ const wordle = randomWord()
 const numberOfGuesses = 6
 const letters = /^[a-z]+$/
 let unUsableLetters = []
-let locations = {}
+let locations = []
 let lettersInWord = []
 for (let i = 0; i < wordle.length; ++i) {
     lettersInWord.push('')
-    locations[i] = ''
+    locations.push('')
 }
 
 // Returns the next word in the word list 
@@ -41,7 +42,7 @@ function checkWord(word) {
     let unusedLetters = []
 
     // Checks to see if the letter is matching the letter and the place
-    for (let i = 0; i < wordle.length; ++i) {
+    for (let i = 0; i < word.length; ++i) {
         if (word[i] === wordle[i]) {
             retVal.push(letterInPlace)
             locations[i] = word[i]
@@ -62,8 +63,7 @@ function checkWord(word) {
         // Says the letter is not in the word
         else {
             retVal[i] = letterNotInWord
-            if (wordle.includes(word[i]) === false)
-                unUsableLetters.push(word[i])
+            unUsableLetters.push(word[i])
         }
     }
     return retVal
@@ -131,39 +131,13 @@ function colorWord(word, placements) {
     return retVal
 }
 
-// Checks the function checkWord()
-// function testCheckWord(word, expectedResult) {
-//     const checkWordResult = JSON.stringify(checkWord(word))
-//     const expectedResultResult = JSON.stringify(expectedResult)
-
-//     if (checkWordResult !== expectedResultResult) {
-//         console.log(`Expected output: ${expectedResultResult}\nOutput received: ${checkWordResult}\nInputs were word: ${word}, wordle: ${wordle}`)
-//     }
-// }
-
-function testColorWord(word, placements, expected) {
-    const actual = colorWord(word, placements)
-    if (expected.join() !== actual.join()) {
-        console.log(`Expected output: ${expected}\nOutput received: ${actual}`)
-    }
-}
-
-// Some more tests for function colorWord
-testColorWord('aaaaa', [letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord, letterNotInWord], [
-    '<span class="text-secondary fs-1">a</span>',
-    '<span class="text-secondary fs-1">a</span>',
-    '<span class="text-secondary fs-1">a</span>',
-    '<span class="text-secondary fs-1">a</span>',
-    '<span class="text-secondary fs-1">a</span>'
-])
-
 // Ensures the word is usable
 function isUsableWord(word) {
     let usable = true
 
     // Ensures the letter is not in the unUsableLetters list
-    for (let i = 0; i < unUsableLetters.length; ++i) {
-        if (word.includes(unUsableLetters[i])) {
+    for (let i = 0; i < word.length; ++i) {
+        if (unUsableLetters.includes(word[i]) && !lettersInWord.includes(word[i]) && word[i] !== locations[i]) {
             usable = false
             break
         }
@@ -200,12 +174,13 @@ function guessWord(event) {
         word = nextWord()
     } while (!isUsableWord(word))
     event.target.value = word
-    console.log(lettersInWord)
 }
 
 
 $(document).ready(function () {
     $("#word").text(wordle)
     $(document).on('keydown', 'input', keyPress)
-    $(document).on('click', 'input', guessWord)
+    $(document).on('focus', 'input', guessWord)
+    $('#guesses').append(`<input type="text" maxlength="${wordle.length}" style="width: 3em;"></input>`)
+    $('input').focus()
 })
